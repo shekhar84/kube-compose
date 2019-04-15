@@ -84,6 +84,7 @@ type upRunner struct {
 	k8sPodClient         clientV1.PodInterface
 	hostAliasesOnce      *sync.Once
 	hostAliases          hostAliasesOrError
+	serviceArgs          map[string]bool
 }
 
 func (u *upRunner) initKubernetesClientset() error {
@@ -687,13 +688,14 @@ func (u *upRunner) run() error {
 }
 
 // Run runs an operation similar docker-compose up against a Kubernetes cluster.
-func Run(cfg *config.Config) error {
+func Run(cfg *config.Config, serviceArgs map[string]bool) error {
 	// TODO https://github.com/jbrekelmans/kube-compose/issues/2 accept context as a parameter
 	u := &upRunner{
 		cfg:                  cfg,
 		ctx:                  context.Background(),
 		hostAliasesOnce:      &sync.Once{},
 		localImagesCacheOnce: &sync.Once{},
+		serviceArgs:          serviceArgs,
 	}
 	return u.run()
 }
